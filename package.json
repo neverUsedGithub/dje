@@ -1,0 +1,23 @@
+{
+  "name": "dje",
+  "version": "0.0.1",
+  "description": "A code editor inspired by [ded](https://github.com/tsoding/ded).",
+  "main": "editor.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neverUsedGithub/dje.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/neverUsedGithub/dje/issues"
+  },
+  "homepage": "https://github.com/neverUsedGithub/dje#readme"
+}
