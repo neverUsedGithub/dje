@@ -1,7 +1,7 @@
-import Editor from "./DJE/editor.js";
-import Javascript from "./DJE/languages/javascript.js";
-import AutoIndent from "./DJE/plugins/autoIndent.js";
-import CharacterPairs from "./DJE/plugins/characterPairs.js";
+import Editor from "../../editor.js";
+import Javascript from "../../languages/javascript.js";
+import AutoIndent from "../../plugins/autoIndent.js";
+import CharacterPairs from "../../plugins/characterPairs.js";
 
 const inst = new Editor({
   element: ".editor",
