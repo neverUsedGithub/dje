@@ -16,8 +16,9 @@ export default class Editor {
   #currentMode;
   #tokens;
   #plugins;
+  #view;
 
-  constructor({ element, content, mode, plugins, theme }) {
+  constructor({ element, content, mode, plugins, theme, tabSize }) {
     /** @type {HTMLCanvasElement} */
     this.#canvasEl = typeof element === "string" ? document.querySelector(element) : element;
     /** @type {CanvasRenderingContext2D} */
@@ -29,6 +30,7 @@ export default class Editor {
     this.#pressedKeys = {};
     this.#plugins = [];
     this.#currentMode = mode;
+    this.#view = new EditorView(theme || {});
     
     this.#inputTextArea = document.createElement("textarea");
     this.#inputTextArea.style.position = "absolute";
@@ -39,14 +41,14 @@ export default class Editor {
     document.body.appendChild(this.#inputTextArea);
     this.focus();
     
-    this.view = new EditorView(theme || {});
+    this.tabSize = tabSize;
     this.document = new EditorDocument(content, () => this.#generateTokens())
     
     this.fit();
     this.#generateTokens();
     this.#addListeners();
 
-    this.use(this.view);
+    this.use(this.#view);
     if (plugins) for (const pl of plugins) this.use(pl);
   }
 
@@ -142,14 +144,14 @@ export default class Editor {
 
         this.#selection.end = { line: this.#cursor.line, col: this.#cursor.col };
       }
-      else if (ev.key === "Control") {
-        this.#pressedKeys[ev.key] = false;
-      }
+      
+      delete this.#pressedKeys[ev.key];
     });
 
     this.#inputTextArea.addEventListener("keydown", ev => {
       ev.preventDefault();
 
+      this.#pressedKeys[ev.key] = true;
       this.#triggerEvent("press", ev);
       if (ev.key === "ArrowUp" ||
           ev.key === "ArrowDown" ||
@@ -170,7 +172,7 @@ export default class Editor {
         else this.#shouldSelect = true;
       }
       else if (ev.key === "Tab") {
-        this.document.insertAt(this.#cursor, "  ");
+        this.document.insertAt(this.#cursor, " ".repeat(this.tabSize));
         this.#cursor.col += 2;
       }
       else if (ev.key === "ArrowDown") {
@@ -232,9 +234,13 @@ export default class Editor {
           this.#replaceSelection("");
         }
         else if (currLine.substring(0, this.#cursor.col).length > 0) {
-          this.document.deleteAt(this.#cursor);
-          if (this.#cursor.col !== currLine.length - 1)
+          if (this.#cursor.col !== currLine.length) {
+            this.document.deleteAt(this.#cursor);
             this.moveCursor(0, -1);
+          }
+          else {
+            this.document.deleteAt(this.#cursor);
+          }
         }
         else if (this.#cursor.line - 1 >= 0) {
           const currline = this.#cursor.line;
@@ -253,7 +259,7 @@ export default class Editor {
         const currline = this.document.getLine(this.#cursor.line);
         const rest = currline.substring(this.#cursor.col);
         this.document.setLine(this.#cursor.line, currline.substring(0, this.#cursor.col));
-        
+      
         this.document.addLine(this.#cursor.line + 1, rest);
         this.moveCursor(1, 0);
         this.#cursor.col = 0;

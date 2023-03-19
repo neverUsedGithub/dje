@@ -23,5 +23,6 @@ greet("World");`,
     keyword: { color: "#f5cb42", fontWeight: 600 },
     builtin: { color: "#75d9aa" },
     string: "#40b82e",
-  }
+  },
+  tabSize: 2
 });
