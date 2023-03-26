@@ -52,7 +52,7 @@ export default class EditorView {
   attachEditor(editor, canvasEl, context, getTokens) {
     this.lineHeight = 50;
     this.fontSize = 30;
-    this.animationSpeed = 5;
+    this.animationSpeed = 2;
     this.cursorBlinkTime = 0.5;
     
     this.#fontFamily = "monospace"
