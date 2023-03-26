@@ -15,8 +15,26 @@ function getColorFor(theme, scopes) {
   return current;
 }
 
+function getContextColor(color, startX, endX, context) {
+  if (color && color.type === "gradient") {
+    const grad = context.createLinearGradient(startX, 0, endX, 0);
+
+    for (const [ stopOffset, stopColor ] of color.stops)
+      grad.addColorStop(stopOffset, stopColor);
+    
+    return grad;
+  }
+
+  return typeof color === "string"
+    ? color
+    : getContextColor(color.color, startX, endX, context);
+}
+
 function colorToString(color, fontSize, fontFamily) {
-  if (typeof color === "string") return `${fontSize}px ${fontFamily}`;
+  if (
+    typeof color === "string" ||
+    !color || (!color.style && !color.fontWeight)
+  ) return `${fontSize}px ${fontFamily}`;
 
   return (color.style ? color.style + " " : "") +
          (color.fontWeight ? color.fontWeight + " " : "") +
@@ -49,7 +67,7 @@ export default class EditorView {
   /**
    * @param {import("./editor.js").default} editor 
    */
-  attachEditor(editor, canvasEl, context, getTokens) {
+  attachEditor({ editor, canvasEl, context, getTokens }) {
     this.lineHeight = 50;
     this.fontSize = 30;
     this.animationSpeed = 2;
@@ -202,7 +220,11 @@ export default class EditorView {
       for (const token of tokens[lineNo]) {
         const color = getColorFor(this.theme, token.scopes);
         this.#context.font = colorToString(color, fontSize, this.#fontFamily);
-        this.#context.fillStyle = typeof color === "string" ? color : color.color;
+        this.#context.fillStyle = getContextColor(
+          color,
+          transform.x + col * charWidth, transform.x + col * charWidth + token.value.length * charWidth,
+          this.#context
+        );
 
         this.#context.textBaseline = "top";
         this.#context.fillText(

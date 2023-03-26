@@ -95,7 +95,12 @@ export default class Editor {
   getPlugin(id) { return this.#plugins[id]; }
 
   use(plugin) {
-    plugin.attachEditor(this, this.#canvasEl, this.#context, () => this.#tokens);
+    plugin.attachEditor({
+      editor: this,
+      canvasEl: this.#canvasEl, 
+      context: this.#context,
+      getTokens: () => this.#tokens
+    });
     this.#plugins.push(plugin);
   }
 

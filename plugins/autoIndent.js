@@ -15,7 +15,7 @@ export default class AutoIndent {
    * Auto indentation plugin. Indents after every '{'.
    * @param {import('../editor.js').default} editor
    */
-  attachEditor(editor) {
+  attachEditor({ editor }) {
     const indent = " ".repeat(editor.tabSize);
     editor.on("key", (key) => {
       if (key !== "\n") return;
