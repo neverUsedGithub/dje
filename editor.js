@@ -84,7 +84,7 @@ export default class Editor {
     this.#cursor.line += lines;
     if (this.#cursor.line < 0) this.#cursor.line = 0;
     else if (this.#cursor.line >= this.document.getLines().length)
-      this.#cursor.line = this.document.getLines().length;
+      this.#cursor.line = this.document.getLines().length - 1;
     
     this.#cursor.col += cols;
     if (this.#cursor.col < 0) this.#cursor.col = 0;
@@ -227,13 +227,26 @@ export default class Editor {
           }
         }
       }
+      else if (ev.key === "Delete") {
+        const currLine = this.document.getLine(this.#cursor.line);
+
+        if (this.#selection) {
+          this.#replaceSelection("");
+        }
+        else {
+          this.document.deleteAt({
+            line: this.#cursor.line,
+            col: this.#cursor.col + 1
+          });
+        }
+      }
       else if (ev.key === "Backspace") {
         const currLine = this.document.getLine(this.#cursor.line);
 
         if (this.#selection) {
           this.#replaceSelection("");
         }
-        else if (currLine.substring(0, this.#cursor.col).length > 0) {
+        else if (this.#cursor.col > 0) {
           if (this.#cursor.col !== currLine.length) {
             this.document.deleteAt(this.#cursor);
             this.moveCursor(0, -1);

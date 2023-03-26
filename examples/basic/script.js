@@ -5,7 +5,10 @@ import CharacterPairs from "../../plugins/characterPairs.js";
 
 const inst = new Editor({
   element: ".editor",
-  content: `function greet(name: string) {
+  content: `/** 
+ * @description A greeting function.
+ */
+function greet(name) {
   console.log(\`Hello, \${name}!\`);
 }
 
@@ -23,6 +26,8 @@ greet("World");`,
     keyword: { color: "#f5cb42", fontWeight: 600 },
     builtin: { color: "#75d9aa" },
     string: "#40b82e",
+    number: "#f5cb42",
+    comment: "#555555"
   },
   tabSize: 2
 });

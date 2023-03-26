@@ -1,4 +1,10 @@
-const lerp = (from, to, amt) => (1 - amt) * from + amt * to;
+const lerp = (from, to, t) => from + t * (to - from);
+// const smoothstep = (from, to, amt) => 
+//   lerp(from, to, amt ** 2 * (3 - 2 * amt));
+// const cosine = (from, to, t) => 
+//   lerp(from, to, -Math.cos(Math.PI * t) / 2 + 0.5);
+
+const EASING_FUNCTION = lerp;
 
 function getColorFor(theme, scopes) {
   let current = theme.foreground;
@@ -46,7 +52,7 @@ export default class EditorView {
   attachEditor(editor, canvasEl, context, getTokens) {
     this.lineHeight = 50;
     this.fontSize = 30;
-    this.animationSpeed = 2;
+    this.animationSpeed = 5;
     this.cursorBlinkTime = 0.5;
     
     this.#fontFamily = "monospace"
@@ -104,7 +110,10 @@ export default class EditorView {
         this.#context.fillRect(
           transform.x + selection.start.col * charWidth,
           transform.y + line * lineHeight - lineHeight,
-          (this.#editor.document.getLine(line).length - selection.start.col) * charWidth,
+          Math.max(
+            (this.#editor.document.getLine(line).length - selection.start.col) * charWidth,
+            charWidth
+          ),
           charHeight
         )
       }
@@ -141,7 +150,7 @@ export default class EditorView {
       ...this.#editor.document.getLines().map(l => l.length)
     );
     const scaleTarget = Math.min(1 + 32 / maxLineLength, 7);
-    const scale = lerp(this.#lastScale, scaleTarget, this.animationSpeed * delta);
+    const scale = EASING_FUNCTION(this.#lastScale, scaleTarget, this.animationSpeed * delta);
     this.#lastScale = scale;    
     const charWidth = this.#characterWidth * scale;
     const charHeight = this.#characterHeight * scale;
@@ -159,8 +168,8 @@ export default class EditorView {
     };
 
     this.#drawnCamera = {
-      x: lerp(this.#drawnCamera.x, cameraTarget.x, this.animationSpeed * delta),
-      y: lerp(this.#drawnCamera.y, cameraTarget.y, this.animationSpeed * delta)
+      x: EASING_FUNCTION(this.#drawnCamera.x, cameraTarget.x, this.animationSpeed * delta),
+      y: EASING_FUNCTION(this.#drawnCamera.y, cameraTarget.y, this.animationSpeed * delta)
     };
 
     const transform = {
