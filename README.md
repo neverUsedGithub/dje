@@ -23,4 +23,4 @@ new Editor({
   tabSize: 2
 })
 ```
-The editor should now be displayed on your webpage! To see all possible methods, look at the provided example in `examples/basic` since there is no documentation yet.
+The editor should now be displayed on your webpage! For an example, look at the provided example in `examples/basic`.
