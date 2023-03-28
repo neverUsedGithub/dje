@@ -3,7 +3,7 @@
 An extensible code editor inspired by [ded](https://github.com/tsoding/ded).
 
 # Getting Started
-First install the editor library with `npm i https://github.com/neverUsedGithub/dje`. After installing the library import it in a js file.
+First, install the editor library with `npm i https://github.com/neverUsedGithub/dje`. After installing the library, import it in a js file.
 ```js
 import Editor from "jde";
 ```
@@ -23,4 +23,4 @@ new Editor({
   tabSize: 2
 })
 ```
-The editor should now be displayed on your webpage! To see all of the possible methods look to the source code, since there is no documentation yet.
+The editor should now be displayed on your webpage! To see all possible methods, look at the provided example in `examples/basic` since there is no documentation yet.
