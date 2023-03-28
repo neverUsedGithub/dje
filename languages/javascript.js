@@ -69,6 +69,47 @@ export default class Javascript {
             content += text[i++];
             break;
           }
+          if (content[content.length - 1] !== "\\" && text[i] === "$" && text[i + 1] === "{") {
+            const start = i;
+            let count = 1;
+            i += 2;
+
+            while (count > 0 && i < text.length) {
+              if (text[i] === "{") count++;
+              else if (text[i] === "}") count--;
+              i++;
+            }
+
+            // Only highlight if the template was closed
+            if (count === 0) {
+              const inner = text.substring(start, i);
+              lines[lines.length - 1].push({
+                scopes: [ "string", "multiline-string" ],
+                value: content,
+              });
+              content = "";
+              lines[lines.length - 1].push({
+                scopes: [ "string", "multiline-string", "template" ],
+                value: "${",
+              });
+              const innerLines = this.lex(inner.substring(2, inner.length - 1));
+              
+              for (let j = 0; j < innerLines.length; j++) {
+                lines[lines.length - 1].push(...innerLines[j]);
+
+                if (j !== innerLines.length - 1) lines.push([]);
+              }
+
+              lines[lines.length - 1].push({
+                scopes: [ "string", "multiline-string", "template" ],
+                value: "}",
+              });
+              continue;
+            }
+            else {
+              i = start;
+            }
+          }
           if (text[i] === "\n") {
             lines[lines.length - 1].push({
               scopes: [ "string", "multiline-string" ],
