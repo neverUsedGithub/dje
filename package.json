@@ -19,5 +19,12 @@
   "bugs": {
     "url": "https://github.com/neverUsedGithub/dje/issues"
   },
-  "homepage": "https://github.com/neverUsedGithub/dje#readme"
+  "homepage": "https://github.com/neverUsedGithub/dje#readme",
+  "devDependencies": {
+    "tsup": "^6.7.0"
+  },
+  "files": [ "dist" ],
+  "exports": {
+    ".": "./dist"
+  }
 }

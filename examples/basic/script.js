@@ -1,7 +1,7 @@
-import Editor from "../../editor.js";
-import Javascript from "../../languages/javascript.js";
-import AutoIndent from "../../plugins/autoIndent.js";
-import CharacterPairs from "../../plugins/characterPairs.js";
+import Editor from "../../dist/editor.mjs";
+import Javascript from "../../dist/languages/javascript.mjs";
+import AutoIndent from "../../dist/plugins/autoIndent.mjs";
+import CharacterPairs from "../../dist/plugins/characterPairs.mjs";
 
 const inst = new Editor({
   element: ".editor",
@@ -26,10 +26,10 @@ greet("World");`,
     keyword: {
       color: {
         type: "gradient",
-        stops: [
-          [ 0, "#f5a142" ],
-          [ 1, "#f5cb42" ]
-        ]
+        stops: {
+          0: "#f5a142",
+          1: "#f5cb42"
+        }
       },
       fontWeight: 600
     },// { color: "#f5cb42", fontWeight: 600 },
