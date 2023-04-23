@@ -1,5 +1,5 @@
 import EditorDocument from "./editorDocument.js";
-import EditorView from "./editorView.js";
+import EditorView, { EditorTheme } from "./editorView.js";
 import type { Token } from "./languages.js";
 import type { DocumentPosition, DocumentSelection } from "./editorDocument.js";
 
@@ -29,6 +29,15 @@ export interface EditorPlugin {
   }): void
 }
 
+interface EditorOptions {
+  element: HTMLCanvasElement | "string";
+  content: string;
+  mode: EditorLanguageMode;
+  plugins: EditorPlugin[];
+  theme: EditorTheme;
+  tabSize: number;
+}
+
 export default class Editor {
   #canvasEl: HTMLCanvasElement;
   #context: CanvasRenderingContext2D | null;
@@ -45,8 +54,8 @@ export default class Editor {
   tabSize: number;
   document: EditorDocument;
 
-  constructor({ element, content, mode, plugins, theme, tabSize }) {
-    this.#canvasEl = typeof element === "string" ? document.querySelector(element) : element;
+  constructor({ element, content, mode, plugins, theme, tabSize }: EditorOptions) {
+    this.#canvasEl = (typeof element === "string" ? document.querySelector(element) : element) as HTMLCanvasElement;
     this.#context = null;
     this.#cursor = { line: 0, col: 0 };
     this.#events = {};
