@@ -2,7 +2,7 @@
   "name": "dje",
   "version": "0.0.1",
   "description": "A code editor inspired by [ded](https://github.com/tsoding/ded).",
-  "main": "./dist/editor.mjs",
+  "main": "./dist/editor.js",
   "directories": {
     "example": "examples"
   },
@@ -26,8 +26,8 @@
   "files": [ "dist" ],
   "type": "module",
   "exports": {
-    ".": "./dist/editor.mjs",
-    "./languages/*": "./dist/languages/*.mjs",
-    "./plugins/*": "./dist/plugins/*.mjs"
+    ".": "./dist/editor.js",
+    "./languages/*": "./dist/languages/*.js",
+    "./plugins/*": "./dist/plugins/*.js"
   }
 }
