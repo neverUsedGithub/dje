@@ -25,6 +25,8 @@
   },
   "files": [ "dist" ],
   "exports": {
-    ".": "./dist"
+    ".": "./dist",
+    "./languages": "./dist/languages",
+    "./plugins": "./dist/plugins"
   }
 }
