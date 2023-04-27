@@ -27,7 +27,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/editor.mjs",
-    "./languages": "./dist/languages/",
-    "./plugins": "./dist/plugins/"
+    "./languages/": "./dist/languages/",
+    "./plugins/": "./dist/plugins/"
   }
 }
