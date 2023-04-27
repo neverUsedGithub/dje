@@ -1,6 +1,6 @@
-import type { EditorPlugin } from "../editor";
+import type { EditorPlugin, EditorPluginOptions } from "../editor";
 
-const PAIRS = {
+const PAIRS: Record<string, string> = {
   "{": "}",
   "[": "]",
   "(": ")",
@@ -9,9 +9,9 @@ const PAIRS = {
 }
 
 export default class CharacterPairs implements EditorPlugin {
-  attachEditor({ editor }) {
-    editor.on("key", key => {
-      if (PAIRS[key]) {
+  attachEditor({ editor }: EditorPluginOptions) {
+    editor.on("key", (key: string) => {
+      if (key in PAIRS) {
         editor.document.insertAt(
           editor.getCursor(), PAIRS[key]
         );

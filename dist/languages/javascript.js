@@ -7,8 +7,8 @@ import {
   plain,
   punctuation,
   string
-} from "../chunk-HQKLBYXX.mjs";
-import "../chunk-OMT57NJ7.mjs";
+} from "../chunk-V33TSK26.js";
+import "../chunk-ATKLQZT6.js";
 
 // src/languages/javascript.ts
 var ID_START = /[\$A-Za-z_]/;

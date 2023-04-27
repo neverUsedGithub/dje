@@ -2,7 +2,7 @@ import {
   __privateAdd,
   __privateGet,
   __privateSet
-} from "./chunk-OMT57NJ7.mjs";
+} from "./chunk-ATKLQZT6.js";
 
 // src/editorDocument.ts
 var _lines, _genTokens;

@@ -2,5 +2,6 @@
   "$schema": "https://cdn.jsdelivr.net/npm/tsup/schema.json",
   "entry": [ "src" ],
   "clean": true,
-  "format": "esm"
+  "format": "esm",
+  "dts": true
 }

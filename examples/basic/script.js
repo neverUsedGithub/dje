@@ -3,7 +3,7 @@ import Javascript from "../../dist/languages/javascript.mjs";
 import AutoIndent from "../../dist/plugins/autoIndent.mjs";
 import CharacterPairs from "../../dist/plugins/characterPairs.mjs";
 
-const inst = new Editor({
+const editor = new Editor({
   element: ".editor",
   content: `/** 
  * @description A greeting function.
@@ -40,3 +40,7 @@ greet("World");`,
   },
   tabSize: 2
 });
+
+window.addEventListener("resize", () => {
+  editor.fit()
+})

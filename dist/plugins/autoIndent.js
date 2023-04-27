@@ -1,8 +1,8 @@
-import "../chunk-OMT57NJ7.mjs";
+import "../chunk-ATKLQZT6.js";
 
 // src/plugins/autoIndent.ts
 function countString(string, chars) {
-  let count = {};
+  const count = {};
   for (let i = 0; i < string.length; i++)
     for (let j = 0; j < chars.length; j++)
       if (string[i] === chars[j]) {

@@ -1,15 +1,16 @@
 import {
   EditorDocument
-} from "./chunk-DNJSM46V.mjs";
+} from "./chunk-HWJK7Y2W.js";
 import {
   EditorView
-} from "./chunk-RG3S56T2.mjs";
+} from "./chunk-AJBGMVTQ.js";
 import {
   __privateAdd,
   __privateGet,
   __privateMethod,
-  __privateSet
-} from "./chunk-OMT57NJ7.mjs";
+  __privateSet,
+  __spreadValues
+} from "./chunk-ATKLQZT6.js";
 
 // src/editor.ts
 var TEXT_REGEX = /[A-z_0-9]/;
@@ -22,6 +23,8 @@ var TokenType = /* @__PURE__ */ ((TokenType2) => {
   TokenType2[TokenType2["identifier"] = 5] = "identifier";
   return TokenType2;
 })(TokenType || {});
+var EditorPlugin = class {
+};
 var _canvasEl, _context, _cursor, _selection, _events, _shouldSelect, _inputTextArea, _pressedKeys, _currentMode, _tokens, _plugins, _view, _generateTokens, generateTokens_fn, _triggerEvent, triggerEvent_fn, _replaceSelection, replaceSelection_fn, _addListeners, addListeners_fn;
 var Editor = class {
   constructor({ element, content, mode, plugins, theme, tabSize }) {
@@ -51,6 +54,7 @@ var Editor = class {
     __privateSet(this, _plugins, []);
     __privateSet(this, _currentMode, mode);
     __privateSet(this, _view, new EditorView(theme || {}));
+    __privateSet(this, _tokens, []);
     __privateSet(this, _inputTextArea, document.createElement("textarea"));
     __privateGet(this, _inputTextArea).style.position = "absolute";
     __privateGet(this, _inputTextArea).style.top = "-99999px";
@@ -93,10 +97,7 @@ var Editor = class {
       __privateGet(this, _cursor).col = this.document.getLine(__privateGet(this, _cursor).line).length;
   }
   getCursor() {
-    return { ...__privateGet(this, _cursor) };
-  }
-  getPlugin(id) {
-    return __privateGet(this, _plugins)[id];
+    return __spreadValues({}, __privateGet(this, _cursor));
   }
   use(plugin) {
     plugin.attachEditor({
@@ -144,7 +145,7 @@ replaceSelection_fn = function(text) {
   if (!__privateGet(this, _selection))
     return;
   if (!__privateGet(this, _selection).end)
-    __privateGet(this, _selection).end = { ...__privateGet(this, _cursor) };
+    __privateGet(this, _selection).end = __spreadValues({}, __privateGet(this, _cursor));
   this.document.replaceRange(__privateGet(this, _selection), text);
   if (__privateGet(this, _selection).start.line > __privateGet(this, _selection).end.line || __privateGet(this, _selection).start.line === __privateGet(this, _selection).end.line && __privateGet(this, _selection).start.col > __privateGet(this, _selection).end.col) {
     __privateGet(this, _cursor).line = __privateGet(this, _selection).end.line;
@@ -288,6 +289,7 @@ addListeners_fn = function() {
   });
 };
 export {
+  EditorPlugin,
   EditorView,
   TokenType,
   Editor as default

@@ -47,7 +47,7 @@ export default class EditorDocument {
     return index;
   }
 
-  replaceRange({ start, end }: DocumentSelection, replacement: string) {
+  replaceRange({ start, end }: DocumentSelection, replacement: string): void {
     if (!end)
       throw new Error("Unexpected value for replaceRange({ start, end }, replacement), end cannot be undefined.");
 

@@ -2,8 +2,9 @@ import {
   __privateAdd,
   __privateGet,
   __privateMethod,
-  __privateSet
-} from "./chunk-OMT57NJ7.mjs";
+  __privateSet,
+  __spreadValues
+} from "./chunk-ATKLQZT6.js";
 
 // src/editorView.ts
 var lerp = (from, to, t) => from + t * (to - from);
@@ -13,18 +14,20 @@ function getColorFor(theme, type) {
   return theme[type] || current;
 }
 function getContextColor(color, startX, endX, context) {
-  if (color && color.type === "gradient") {
+  if (typeof color !== "string" && "type" in color && color.type === "gradient") {
     const grad = context.createLinearGradient(startX, 0, endX, 0);
     for (const [stopOffset, stopColor] of Object.entries(color.stops))
-      grad.addColorStop(stopOffset, stopColor);
+      grad.addColorStop(parseFloat(stopOffset), stopColor);
     return grad;
   }
+  if (typeof color !== "string" && !("color" in color))
+    throw new Error("Invalid color");
   return typeof color === "string" ? color : getContextColor(color.color, startX, endX, context);
 }
-function colorToString(color, fontSize, fontFamily) {
-  if (typeof color === "string" || !color || !color.style && !color.fontWeight)
+function colorToFont(color, fontSize, fontFamily) {
+  if (typeof color === "string")
     return `${fontSize}px ${fontFamily}`;
-  return (color.style ? color.style + " " : "") + (color.fontWeight ? color.fontWeight + " " : "") + `${fontSize}px ${fontFamily}`;
+  return ("style" in color ? color.style + " " : "") + ("fontWeight" in color ? color.fontWeight + " " : "") + `${fontSize}px ${fontFamily}`;
 }
 var _canvasEl, _context, _editor, _cursorTimer, _lastTime, _drawnCamera, _lastScale, _characterWidth, _characterHeight, _getTokens, _fontFamily, _adjustFont, adjustFont_fn, _drawSelection, drawSelection_fn, _draw, draw_fn;
 var EditorView = class {
@@ -43,29 +46,34 @@ var EditorView = class {
     __privateAdd(this, _characterHeight, void 0);
     __privateAdd(this, _getTokens, void 0);
     __privateAdd(this, _fontFamily, void 0);
-    this.theme = {
+    this.theme = __spreadValues({
       foreground: "#eee",
       background: "#222",
       cursorColor: "#aaa",
-      selection: "#888",
-      ...userTheme
-    };
-  }
-  attachEditor({ editor, canvasEl, context, getTokens }) {
+      selection: "#888"
+    }, userTheme);
     this.lineHeight = 50;
     this.fontSize = 30;
     this.animationSpeed = 2;
     this.cursorBlinkTime = 0.5;
+    __privateSet(this, _cursorTimer, 0);
+    __privateSet(this, _lastTime, null);
     __privateSet(this, _fontFamily, "monospace");
+    __privateSet(this, _lastScale, 1);
+    __privateSet(this, _drawnCamera, { x: 0, y: 0 });
+    __privateSet(this, _characterHeight, 0);
+    __privateSet(this, _characterWidth, 0);
+    __privateSet(this, _canvasEl, null);
+    __privateSet(this, _context, null);
+    __privateSet(this, _editor, null);
+    __privateSet(this, _getTokens, null);
+  }
+  attachEditor({ editor, canvasEl, context, getTokens }) {
     __privateSet(this, _canvasEl, canvasEl);
     __privateSet(this, _context, context);
     __privateSet(this, _editor, editor);
-    __privateSet(this, _cursorTimer, 0);
-    __privateSet(this, _lastTime, null);
     __privateSet(this, _getTokens, getTokens);
-    __privateSet(this, _drawnCamera, { x: 0, y: 0 });
     __privateGet(this, _context).font = `${this.fontSize}px ${__privateGet(this, _fontFamily)}`;
-    __privateSet(this, _lastScale, 1);
     __privateMethod(this, _adjustFont, adjustFont_fn).call(this);
     __privateGet(this, _editor).on("press", () => {
       __privateSet(this, _cursorTimer, 0);
@@ -92,6 +100,10 @@ adjustFont_fn = function() {
 };
 _drawSelection = new WeakSet();
 drawSelection_fn = function(transform, lineHeight, charWidth, charHeight, selection) {
+  if (!selection.end) {
+    console.warn("Tried to draw a selection without an ending.");
+    return;
+  }
   if (selection.start.line > selection.end.line || selection.start.line === selection.end.line && selection.start.col > selection.end.col)
     return __privateMethod(this, _drawSelection, drawSelection_fn).call(this, transform, lineHeight, charWidth, charHeight, {
       start: selection.end,
@@ -137,7 +149,8 @@ _draw = new WeakSet();
 draw_fn = function(time) {
   if (__privateGet(this, _lastTime) === null) {
     __privateSet(this, _lastTime, time);
-    return requestAnimationFrame(__privateMethod(this, _draw, draw_fn).bind(this));
+    requestAnimationFrame(__privateMethod(this, _draw, draw_fn).bind(this));
+    return;
   }
   const delta = Math.min(time - __privateGet(this, _lastTime), 100) / 1e3;
   __privateSet(this, _lastTime, time);
@@ -185,7 +198,7 @@ draw_fn = function(time) {
     let col = 0;
     for (const token of tokens[lineNo]) {
       const color = getColorFor(this.theme, token.type);
-      __privateGet(this, _context).font = colorToString(color, fontSize, __privateGet(this, _fontFamily));
+      __privateGet(this, _context).font = colorToFont(color, fontSize, __privateGet(this, _fontFamily));
       __privateGet(this, _context).fillStyle = getContextColor(
         color,
         transform.x + col * charWidth,

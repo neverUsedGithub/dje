@@ -1,7 +1,7 @@
-import type { EditorPlugin } from "../editor";
+import type { EditorPlugin, EditorPluginOptions } from "../editor";
 
-function countString(string, chars) {
-  let count = {};
+function countString(string: string, chars: string[]) {
+  const count: Record<string, number> = {};
   for (let i = 0; i < string.length; i++)
     for (let j = 0; j < chars.length; j++)
       if (string[i] === chars[j]) {
@@ -12,9 +12,9 @@ function countString(string, chars) {
 }
 
 export default class AutoIndent implements EditorPlugin {
-  attachEditor({ editor }) {
+  attachEditor({ editor }: EditorPluginOptions) {
     const indent = " ".repeat(editor.tabSize);
-    editor.on("key", (key) => {
+    editor.on("key", (key: string) => {
       if (key !== "\n") return;
       const cursor = editor.getCursor();
       // const lastLine = editor.document.getLine(cursor.line - 1);

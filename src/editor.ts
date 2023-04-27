@@ -15,18 +15,19 @@ export enum TokenType {
   "identifier"
 }
 
-
 export interface EditorLanguageMode {
   lex(contents: string): Token[][]
 }
 
-export interface EditorPlugin {
-  attachEditor(props: {
-    editor: Editor,
-    canvasEl: HTMLCanvasElement, 
-    context: CanvasRenderingContext2D,
-    getTokens: () => Token[][]
-  }): void
+export interface EditorPluginOptions {
+  editor: Editor,
+  canvasEl: HTMLCanvasElement, 
+  context: CanvasRenderingContext2D,
+  getTokens: () => Token[][]
+}
+
+export abstract class EditorPlugin {
+  abstract attachEditor(options: EditorPluginOptions): void
 }
 
 interface EditorOptions {
@@ -65,6 +66,7 @@ export default class Editor {
     this.#plugins = [];
     this.#currentMode = mode;
     this.#view = new EditorView(theme || {});
+    this.#tokens = [];
     
     this.#inputTextArea = document.createElement("textarea");
     this.#inputTextArea.style.position = "absolute";
@@ -97,14 +99,14 @@ export default class Editor {
     return this.#tokens;
   }
 
-  on(name: string, callback: () => void) {
+  on(name: string, callback: (...args: any) => void) {
     if (!this.#events[name])
       this.#events[name] = [];
 
     this.#events[name].push(callback);
   }
 
-  #triggerEvent(name, ...args) {
+  #triggerEvent(name: string, ...args: any[]) {
     if (this.#events[name])
       for (let i = 0; i < this.#events[name].length; i++)
       this.#events[name][i](...args);
@@ -114,7 +116,7 @@ export default class Editor {
     return this.#selection;
   }
 
-  moveCursor(lines, cols) {
+  moveCursor(lines: number, cols: number) {
     this.#cursor.line += lines;
     if (this.#cursor.line < 0) this.#cursor.line = 0;
     else if (this.#cursor.line >= this.document.getLines().length)
@@ -126,7 +128,6 @@ export default class Editor {
       this.#cursor.col = this.document.getLine(this.#cursor.line).length;
   }
   getCursor() { return { ...this.#cursor }; }
-  getPlugin(id) { return this.#plugins[id]; }
 
   use(plugin: EditorPlugin) {
     plugin.attachEditor({
@@ -148,7 +149,7 @@ export default class Editor {
     this.#context = this.#canvasEl.getContext("2d");
   }
 
-  #replaceSelection(text) {
+  #replaceSelection(text: string) {
     if (!this.#selection) return;
 
     if (!this.#selection.end)
