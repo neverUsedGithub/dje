@@ -1,16 +1,17 @@
 import {
   EditorDocument
-} from "./chunk-HWJK7Y2W.js";
+} from "./chunk-LF6KIYVG.js";
 import {
   EditorView
-} from "./chunk-AJBGMVTQ.js";
+} from "./chunk-WMTABAV3.js";
 import {
+  __async,
   __privateAdd,
   __privateGet,
   __privateMethod,
   __privateSet,
   __spreadValues
-} from "./chunk-ATKLQZT6.js";
+} from "./chunk-P73PLKE6.js";
 
 // src/editor.ts
 var TEXT_REGEX = /[A-z_0-9]/;
@@ -25,9 +26,9 @@ var TokenType = /* @__PURE__ */ ((TokenType2) => {
 })(TokenType || {});
 var EditorPlugin = class {
 };
-var _canvasEl, _context, _cursor, _selection, _events, _shouldSelect, _inputTextArea, _pressedKeys, _currentMode, _tokens, _plugins, _view, _generateTokens, generateTokens_fn, _triggerEvent, triggerEvent_fn, _replaceSelection, replaceSelection_fn, _addListeners, addListeners_fn;
+var _canvasEl, _context, _cursor, _selection, _events, _shouldSelect, _inputTextArea, _pressedKeys, _currentMode, _tabIndentsLine, _tokens, _plugins, _view, _generateTokens, generateTokens_fn, _triggerEvent, triggerEvent_fn, _replaceSelection, replaceSelection_fn, _addListeners, addListeners_fn;
 var Editor = class {
-  constructor({ element, content, mode, plugins, theme, tabSize }) {
+  constructor({ element, content, mode, plugins, theme, tabSize, tabIndentsLine }) {
     __privateAdd(this, _generateTokens);
     __privateAdd(this, _triggerEvent);
     __privateAdd(this, _replaceSelection);
@@ -41,6 +42,7 @@ var Editor = class {
     __privateAdd(this, _inputTextArea, void 0);
     __privateAdd(this, _pressedKeys, void 0);
     __privateAdd(this, _currentMode, void 0);
+    __privateAdd(this, _tabIndentsLine, void 0);
     __privateAdd(this, _tokens, void 0);
     __privateAdd(this, _plugins, void 0);
     __privateAdd(this, _view, void 0);
@@ -55,6 +57,7 @@ var Editor = class {
     __privateSet(this, _currentMode, mode);
     __privateSet(this, _view, new EditorView(theme || {}));
     __privateSet(this, _tokens, []);
+    __privateSet(this, _tabIndentsLine, tabIndentsLine != null ? tabIndentsLine : false);
     __privateSet(this, _inputTextArea, document.createElement("textarea"));
     __privateGet(this, _inputTextArea).style.position = "absolute";
     __privateGet(this, _inputTextArea).style.top = "-99999px";
@@ -63,7 +66,7 @@ var Editor = class {
     __privateGet(this, _inputTextArea).style.height = "0px";
     document.body.appendChild(__privateGet(this, _inputTextArea));
     this.focus();
-    this.tabSize = tabSize;
+    this.tabSize = tabSize != null ? tabSize : 4;
     this.document = new EditorDocument(content, () => __privateMethod(this, _generateTokens, generateTokens_fn).call(this));
     this.fit();
     __privateMethod(this, _generateTokens, generateTokens_fn).call(this);
@@ -126,6 +129,7 @@ _shouldSelect = new WeakMap();
 _inputTextArea = new WeakMap();
 _pressedKeys = new WeakMap();
 _currentMode = new WeakMap();
+_tabIndentsLine = new WeakMap();
 _tokens = new WeakMap();
 _plugins = new WeakMap();
 _view = new WeakMap();
@@ -163,19 +167,19 @@ addListeners_fn = function() {
   });
   __privateGet(this, _inputTextArea).addEventListener("keyup", (ev) => {
     ev.preventDefault();
+    delete __privateGet(this, _pressedKeys)[ev.key];
     if (ev.key === "Shift") {
       __privateSet(this, _shouldSelect, false);
       if (!__privateGet(this, _selection))
         return;
       __privateGet(this, _selection).end = { line: __privateGet(this, _cursor).line, col: __privateGet(this, _cursor).col };
     }
-    delete __privateGet(this, _pressedKeys)[ev.key];
   });
-  __privateGet(this, _inputTextArea).addEventListener("keydown", (ev) => {
+  __privateGet(this, _inputTextArea).addEventListener("keydown", (ev) => __async(this, null, function* () {
     ev.preventDefault();
     __privateGet(this, _pressedKeys)[ev.key] = true;
     __privateMethod(this, _triggerEvent, triggerEvent_fn).call(this, "press", ev);
-    if (ev.key === "ArrowUp" || ev.key === "ArrowDown" || ev.key === "ArrowLeft" || ev.key === "ArrowRight") {
+    if (ev.key === "ArrowUp" || ev.key === "ArrowDown" || ev.key === "ArrowLeft" || ev.key === "ArrowRight" || ev.key === "Home" || ev.key === "End") {
       if (__privateGet(this, _shouldSelect)) {
         __privateSet(this, _selection, {
           start: { line: __privateGet(this, _cursor).line, col: __privateGet(this, _cursor).col },
@@ -187,13 +191,49 @@ addListeners_fn = function() {
         __privateSet(this, _selection, null);
     }
     if (ev.key === "Shift") {
-      if (__privateGet(this, _selection))
-        __privateSet(this, _selection, null);
-      else
-        __privateSet(this, _shouldSelect, true);
+      __privateSet(this, _shouldSelect, true);
     } else if (ev.key === "Tab") {
-      this.document.insertAt(__privateGet(this, _cursor), " ".repeat(this.tabSize));
-      __privateGet(this, _cursor).col += 2;
+      if (__privateGet(this, _selection)) {
+        if (__privateGet(this, _selection).end) {
+          let startLine = __privateGet(this, _selection).start.line;
+          let endLine = __privateGet(this, _selection).end.line;
+          if (endLine < startLine) {
+            startLine = endLine;
+            endLine = __privateGet(this, _selection).start.line;
+          }
+          for (let lineI = startLine; lineI <= endLine; lineI++) {
+            const line = this.document.getLine(lineI);
+            if (__privateGet(this, _pressedKeys)["Shift"]) {
+              if (line.startsWith(" ".repeat(this.tabSize)))
+                this.document.setLine(lineI, line.substring(this.tabSize));
+            } else {
+              this.document.setLine(lineI, " ".repeat(this.tabSize) + line);
+            }
+          }
+        }
+      } else if (!__privateGet(this, _tabIndentsLine)) {
+        this.document.insertAt(__privateGet(this, _cursor), " ".repeat(this.tabSize));
+        __privateGet(this, _cursor).col += 2;
+      } else {
+        if (__privateGet(this, _pressedKeys)["Shift"]) {
+          const currline = this.document.getLine(__privateGet(this, _cursor).line);
+          if (currline.startsWith(" ".repeat(this.tabSize))) {
+            this.moveCursor(0, -this.tabSize);
+            this.document.setLine(__privateGet(this, _cursor).line, currline.substring(this.tabSize));
+          }
+        } else {
+          this.document.setLine(__privateGet(this, _cursor).line, " ".repeat(this.tabSize) + this.document.getLine(__privateGet(this, _cursor).line));
+          this.moveCursor(0, this.tabSize);
+        }
+      }
+    } else if (__privateGet(this, _pressedKeys)["Control"] && ev.key === "v") {
+      const clipText = yield navigator.clipboard.readText();
+      const split = clipText.split("\n");
+      this.document.insertAt(__privateGet(this, _cursor), clipText);
+      this.moveCursor(split.length - 1, split[split.length - 1].length);
+    } else if (__privateGet(this, _pressedKeys)["Control"] && ev.key === "c") {
+      if (__privateGet(this, _selection))
+        yield navigator.clipboard.writeText(this.document.getRange(__privateGet(this, _selection)));
     } else if (ev.key === "ArrowDown") {
       if (__privateGet(this, _cursor).line + 1 < this.document.getLines().length) {
         this.moveCursor(1, 0);
@@ -230,7 +270,6 @@ addListeners_fn = function() {
         }
       }
     } else if (ev.key === "Delete") {
-      const currLine = this.document.getLine(__privateGet(this, _cursor).line);
       if (__privateGet(this, _selection)) {
         __privateMethod(this, _replaceSelection, replaceSelection_fn).call(this, "");
       } else {
@@ -286,7 +325,7 @@ addListeners_fn = function() {
     } else {
       console.log("Pressed unknown key", ev.key);
     }
-  });
+  }));
 };
 export {
   EditorPlugin,

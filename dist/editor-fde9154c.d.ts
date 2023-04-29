@@ -1,21 +1,23 @@
 import EditorDocument, { DocumentSelection } from './editorDocument.js';
 import { Token } from './languages.js';
 
-type TokenColorMain = string | ({
+declare type TokenColorColor = string | {
     type: "gradient";
     stops: Record<number, string>;
-} | {
-    color: string;
-    fontWeight?: number;
-}) & {
-    style: string;
 };
-type EditorTheme = {
+declare type TokenColor = TokenColorColor | {
+    color: TokenColorColor;
+    style?: string;
+    fontWeight?: number;
+};
+declare type EditorTokenTheme = Record<string, TokenColor>;
+declare type EditorTheme = {
     cursorColor?: string;
     background?: string;
     foreground?: string;
     selection?: string;
-} & Record<TokenType, TokenColorMain>;
+    tokens?: EditorTokenTheme;
+};
 declare class EditorView implements EditorPlugin {
     #private;
     theme: EditorTheme;
@@ -48,18 +50,19 @@ declare abstract class EditorPlugin {
     abstract attachEditor(options: EditorPluginOptions): void;
 }
 interface EditorOptions {
-    element: HTMLCanvasElement | "string";
+    element: HTMLCanvasElement | string;
     content: string;
     mode: EditorLanguageMode;
     plugins: EditorPlugin[];
     theme: EditorTheme;
-    tabSize: number;
+    tabSize?: number;
+    tabIndentsLine?: boolean;
 }
 declare class Editor {
     #private;
     tabSize: number;
     document: EditorDocument;
-    constructor({ element, content, mode, plugins, theme, tabSize }: EditorOptions);
+    constructor({ element, content, mode, plugins, theme, tabSize, tabIndentsLine }: EditorOptions);
     getTokens(): Token[][];
     on(name: string, callback: (...args: any) => void): void;
     getSelection(): DocumentSelection | null;

@@ -8,13 +8,13 @@ import {
   punctuation,
   string
 } from "../chunk-V33TSK26.js";
-import "../chunk-ATKLQZT6.js";
+import "../chunk-P73PLKE6.js";
 
 // src/languages/javascript.ts
 var ID_START = /[\$A-Za-z_]/;
 var ID_REST = /[\$A-Za-z_0-9]/;
 var NUMBERS = /[0-9]/;
-var KEYWORDS = ["await", "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "enum", "export", "extends", "false", "finally", "for", "function", "if", "implements", "import", "in", "instanceof", "interface", "let", "new", "null", "package", "private", "protected", "public", "return", "super", "switch", "static", "this", "throw", "try", "true", "typeof", "var", "void", "while", "with", "yield"];
+var KEYWORDS = ["await", "async", "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "enum", "export", "extends", "false", "finally", "for", "function", "if", "implements", "import", "in", "instanceof", "interface", "let", "new", "null", "package", "private", "protected", "public", "return", "super", "switch", "static", "this", "throw", "try", "true", "typeof", "var", "void", "while", "with", "yield"];
 var Javascript = class {
   lex(text) {
     const lines = [[]];

@@ -1,7 +1,7 @@
 import {
   EditorDocument
-} from "./chunk-HWJK7Y2W.js";
-import "./chunk-ATKLQZT6.js";
+} from "./chunk-LF6KIYVG.js";
+import "./chunk-P73PLKE6.js";
 export {
   EditorDocument as default
 };

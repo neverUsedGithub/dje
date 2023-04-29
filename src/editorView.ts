@@ -3,18 +3,20 @@ import type { DocumentSelection } from "./editorDocument";
 import type { Token } from "./languages";
 
 interface Position { x: number, y: number }
-type TokenColorMain = string
-                    | (
-                      { type: "gradient", stops: Record<number, string> }
-                      | { color: string, fontWeight?: number }
-                    ) & { style: string };
+
+type TokenColorColor = string | { type: "gradient", stops: Record<number, string> };
+type TokenColor = TokenColorColor
+                | { color: TokenColorColor, style?: string, fontWeight?: number };
+
+type EditorTokenTheme = Record<string, TokenColor>;
 
 export type EditorTheme = {
   cursorColor?: string;
   background?: string;
   foreground?: string;
   selection?: string;
-} & Record<TokenType, TokenColorMain>
+  tokens?: EditorTokenTheme;
+}
 
 const lerp = (from: number, to: number, t: number) => from + t * (to - from);
 // const smoothstep = (from, to, amt) => 
@@ -24,13 +26,14 @@ const lerp = (from: number, to: number, t: number) => from + t * (to - from);
 
 const EASING_FUNCTION = lerp;
 
-function getColorFor(theme: EditorTheme, type: string) {
-  let current = theme.foreground as string;
-  return (theme as Record<string, string>)[type] || current;
+function getColorFor(theme: EditorTheme, type: string): TokenColor {
+  const current = theme.foreground as string;
+  if (type === "tokens") return current;
+  return ((theme as (Record<string, string> & { tokens: EditorTokenTheme }))[type] ?? (theme.tokens as Record<string, TokenColor>)[type]) ?? current;
 }
 
 function getContextColor(
-  color: TokenColorMain,
+  color: TokenColor,
   startX: number,
   endX: number,
   context: CanvasRenderingContext2D
@@ -52,7 +55,7 @@ function getContextColor(
     : getContextColor(color.color, startX, endX, context);
 }
 
-function colorToFont(color: TokenColorMain, fontSize: number, fontFamily: string): string {
+function colorToFont(color: TokenColor, fontSize: number, fontFamily: string): string {
   if (typeof color === "string")
     return `${fontSize}px ${fontFamily}`;
   
@@ -262,6 +265,11 @@ export default class EditorView implements EditorPlugin {
     */
     const tokens = this.#getTokens!();
     for (let lineNo = 0; lineNo < tokens.length; lineNo++) {
+      if (transform.y + lineNo * lineHeight < 0)
+        continue;
+      if (transform.y + lineNo * lineHeight - lineHeight > this.#canvasEl!.height)
+        break;
+      
       let col = 0;
       for (const token of tokens[lineNo]) {
         const color = getColorFor(this.theme, token.type);

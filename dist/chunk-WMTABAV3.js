@@ -4,14 +4,17 @@ import {
   __privateMethod,
   __privateSet,
   __spreadValues
-} from "./chunk-ATKLQZT6.js";
+} from "./chunk-P73PLKE6.js";
 
 // src/editorView.ts
 var lerp = (from, to, t) => from + t * (to - from);
 var EASING_FUNCTION = lerp;
 function getColorFor(theme, type) {
-  let current = theme.foreground;
-  return theme[type] || current;
+  var _a, _b;
+  const current = theme.foreground;
+  if (type === "tokens")
+    return current;
+  return (_b = (_a = theme[type]) != null ? _a : theme.tokens[type]) != null ? _b : current;
 }
 function getContextColor(color, startX, endX, context) {
   if (typeof color !== "string" && "type" in color && color.type === "gradient") {
@@ -195,6 +198,10 @@ draw_fn = function(time) {
   }
   const tokens = __privateGet(this, _getTokens).call(this);
   for (let lineNo = 0; lineNo < tokens.length; lineNo++) {
+    if (transform.y + lineNo * lineHeight < 0)
+      continue;
+    if (transform.y + lineNo * lineHeight - lineHeight > __privateGet(this, _canvasEl).height)
+      break;
     let col = 0;
     for (const token of tokens[lineNo]) {
       const color = getColorFor(this.theme, token.type);

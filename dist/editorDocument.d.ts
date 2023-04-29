@@ -15,6 +15,7 @@ declare class EditorDocument {
     addLine(line: number, text: string): void;
     positionToIndex({ line, col }: DocumentPosition): number;
     replaceRange({ start, end }: DocumentSelection, replacement: string): void;
+    getRange({ start, end }: DocumentSelection): string;
     setLine(line: number, text: string): void;
     getText(): string;
     setText(content: string): void;

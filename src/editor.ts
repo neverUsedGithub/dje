@@ -31,12 +31,13 @@ export abstract class EditorPlugin {
 }
 
 interface EditorOptions {
-  element: HTMLCanvasElement | "string";
+  element: HTMLCanvasElement | string;
   content: string;
   mode: EditorLanguageMode;
   plugins: EditorPlugin[];
   theme: EditorTheme;
-  tabSize: number;
+  tabSize?: number;
+  tabIndentsLine?: boolean;
 }
 
 export default class Editor {
@@ -49,13 +50,14 @@ export default class Editor {
   #inputTextArea: HTMLTextAreaElement;
   #pressedKeys: Record<string, boolean>;
   #currentMode: EditorLanguageMode;
+  #tabIndentsLine: boolean;
   #tokens: Token[][];
   #plugins: EditorPlugin[];
   #view: EditorView;
   tabSize: number;
   document: EditorDocument;
 
-  constructor({ element, content, mode, plugins, theme, tabSize }: EditorOptions) {
+  constructor({ element, content, mode, plugins, theme, tabSize, tabIndentsLine }: EditorOptions) {
     this.#canvasEl = (typeof element === "string" ? document.querySelector(element) : element) as HTMLCanvasElement;
     this.#context = null;
     this.#cursor = { line: 0, col: 0 };
@@ -67,6 +69,7 @@ export default class Editor {
     this.#currentMode = mode;
     this.#view = new EditorView(theme || {});
     this.#tokens = [];
+    this.#tabIndentsLine = tabIndentsLine ?? false;
     
     this.#inputTextArea = document.createElement("textarea");
     this.#inputTextArea.style.position = "absolute";
@@ -77,7 +80,7 @@ export default class Editor {
     document.body.appendChild(this.#inputTextArea);
     this.focus();
     
-    this.tabSize = tabSize;
+    this.tabSize = tabSize ?? 4;
     this.document = new EditorDocument(content, () => this.#generateTokens())
     
     this.fit();
@@ -179,6 +182,7 @@ export default class Editor {
 
     this.#inputTextArea.addEventListener("keyup", ev => {
       ev.preventDefault();
+      delete this.#pressedKeys[ev.key];
       
       if (ev.key === "Shift") {
         this.#shouldSelect = false;
@@ -186,11 +190,9 @@ export default class Editor {
 
         this.#selection.end = { line: this.#cursor.line, col: this.#cursor.col };
       }
-      
-      delete this.#pressedKeys[ev.key];
     });
 
-    this.#inputTextArea.addEventListener("keydown", ev => {
+    this.#inputTextArea.addEventListener("keydown", async ev => {
       ev.preventDefault();
 
       this.#pressedKeys[ev.key] = true;
@@ -198,7 +200,9 @@ export default class Editor {
       if (ev.key === "ArrowUp" ||
           ev.key === "ArrowDown" ||
           ev.key === "ArrowLeft" ||
-          ev.key === "ArrowRight") {
+          ev.key === "ArrowRight" ||
+          ev.key === "Home" ||
+          ev.key === "End") {
         if (this.#shouldSelect) {
           this.#selection = {
             start: { line: this.#cursor.line, col: this.#cursor.col },
@@ -210,12 +214,56 @@ export default class Editor {
           this.#selection = null;
       }
       if (ev.key === "Shift") {
-        if (this.#selection) this.#selection = null;
-        else this.#shouldSelect = true;
+        this.#shouldSelect = true;
       }
       else if (ev.key === "Tab") {
-        this.document.insertAt(this.#cursor, " ".repeat(this.tabSize));
-        this.#cursor.col += 2;
+        if (this.#selection) {
+          if (this.#selection.end) {
+            let startLine = this.#selection.start.line;
+            let endLine = this.#selection.end.line;
+            
+            if (endLine < startLine) {
+              startLine = endLine;
+              endLine = this.#selection.start.line;
+            }
+
+            for (let lineI = startLine; lineI <= endLine; lineI++) {
+              const line = this.document.getLine(lineI);
+
+              if (this.#pressedKeys["Shift"]) {
+                if (line.startsWith(" ".repeat(this.tabSize)))
+                  this.document.setLine(lineI, line.substring(this.tabSize));
+              } else {
+                this.document.setLine(lineI, " ".repeat(this.tabSize) + line);
+              }
+            }
+          }
+        } else if (!this.#tabIndentsLine) {
+          this.document.insertAt(this.#cursor, " ".repeat(this.tabSize));
+          this.#cursor.col += 2;
+        } else {
+          if (this.#pressedKeys["Shift"]) {
+            const currline = this.document.getLine(this.#cursor.line);
+            if (currline.startsWith(" ".repeat(this.tabSize))) {
+              this.moveCursor(0, -this.tabSize);
+              this.document.setLine(this.#cursor.line, currline.substring(this.tabSize));
+            }
+          } else {
+            this.document.setLine(this.#cursor.line, " ".repeat(this.tabSize) + this.document.getLine(this.#cursor.line));
+            this.moveCursor(0, this.tabSize);
+          }
+        }
+      }
+      else if (this.#pressedKeys["Control"] && ev.key === "v") {
+        const clipText = await navigator.clipboard.readText();
+        const split = clipText.split("\n");
+
+        this.document.insertAt(this.#cursor, clipText);
+        this.moveCursor(split.length - 1, split[split.length - 1].length);
+      }
+      else if (this.#pressedKeys["Control"] && ev.key === "c") {
+        if (this.#selection)
+          await navigator.clipboard.writeText(this.document.getRange(this.#selection));
       }
       else if (ev.key === "ArrowDown") {
         if (this.#cursor.line + 1 < this.document.getLines().length) {
@@ -270,8 +318,6 @@ export default class Editor {
         }
       }
       else if (ev.key === "Delete") {
-        const currLine = this.document.getLine(this.#cursor.line);
-
         if (this.#selection) {
           this.#replaceSelection("");
         }

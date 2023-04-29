@@ -21,6 +21,17 @@ export default class EditorDocument {
   }
 
   insertAt({ line, col }: DocumentPosition, text: string) {
+    if (text.includes("\n")) {
+      const lines = text.split("\n");
+      const restText = this.#lines[line].substring(col);
+      this.setLine(line, this.#lines[line].substring(0, col) + lines[0]);
+      
+      for (let offset = 1; offset < lines.length; offset++) {
+        this.addLine(line + offset, lines[offset] + (offset === lines.length - 1 ? restText : ""));
+      }
+      return;
+    }
+
     const ln = this.#lines[line];
 
     this.#lines[line] = ln.substring(0, col) + text + ln.substring(col);
@@ -72,8 +83,26 @@ export default class EditorDocument {
     this.#genTokens();
   }
 
+  getRange({ start, end }: DocumentSelection): string {
+    if (!end)
+      throw new Error("Unexpected value for getRange({ start, end }), end cannot be undefined.");
+
+    if (start.line > end.line ||
+      (
+       start.line === end.line &&
+       start.col > end.col
+      ))
+      return this.getRange({ start: end, end: start });
+
+    const text = this.#lines.join("\n");
+    const startR = this.positionToIndex(start);
+    const endR = this.positionToIndex(end);
+
+    return text.substring(startR, endR);
+  }
+
   setLine(line: number, text: string) {
-    this.#lines.splice(line, 1, text);
+    this.#lines[line] = text;
     this.#genTokens();
   }
 

@@ -1,4 +1,4 @@
-import { E as EditorLanguageMode } from '../editor-ecb8b469.js';
+import { E as EditorLanguageMode } from '../editor-fde9154c.js';
 import { Token } from '../languages.js';
 import '../editorDocument.js';
 

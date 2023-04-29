@@ -1,4 +1,4 @@
-import { a as EditorPlugin, b as EditorPluginOptions } from '../editor-ecb8b469.js';
+import { a as EditorPlugin, b as EditorPluginOptions } from '../editor-fde9154c.js';
 import '../editorDocument.js';
 import '../languages.js';
 

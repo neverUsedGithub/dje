@@ -2,7 +2,7 @@ import {
   __privateAdd,
   __privateGet,
   __privateSet
-} from "./chunk-ATKLQZT6.js";
+} from "./chunk-P73PLKE6.js";
 
 // src/editorDocument.ts
 var _lines, _genTokens;
@@ -19,6 +19,15 @@ var EditorDocument = class {
     __privateGet(this, _genTokens).call(this);
   }
   insertAt({ line, col }, text) {
+    if (text.includes("\n")) {
+      const lines = text.split("\n");
+      const restText = __privateGet(this, _lines)[line].substring(col);
+      this.setLine(line, __privateGet(this, _lines)[line].substring(0, col) + lines[0]);
+      for (let offset = 1; offset < lines.length; offset++) {
+        this.addLine(line + offset, lines[offset] + (offset === lines.length - 1 ? restText : ""));
+      }
+      return;
+    }
     const ln = __privateGet(this, _lines)[line];
     __privateGet(this, _lines)[line] = ln.substring(0, col) + text + ln.substring(col);
     __privateGet(this, _genTokens).call(this);
@@ -53,8 +62,18 @@ var EditorDocument = class {
     __privateSet(this, _lines, text.split("\n"));
     __privateGet(this, _genTokens).call(this);
   }
+  getRange({ start, end }) {
+    if (!end)
+      throw new Error("Unexpected value for getRange({ start, end }), end cannot be undefined.");
+    if (start.line > end.line || start.line === end.line && start.col > end.col)
+      return this.getRange({ start: end, end: start });
+    const text = __privateGet(this, _lines).join("\n");
+    const startR = this.positionToIndex(start);
+    const endR = this.positionToIndex(end);
+    return text.substring(startR, endR);
+  }
   setLine(line, text) {
-    __privateGet(this, _lines).splice(line, 1, text);
+    __privateGet(this, _lines)[line] = text;
     __privateGet(this, _genTokens).call(this);
   }
   getText() {

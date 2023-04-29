@@ -1,4 +1,4 @@
-import "../chunk-ATKLQZT6.js";
+import "../chunk-P73PLKE6.js";
 
 // src/plugins/characterPairs.ts
 var PAIRS = {
