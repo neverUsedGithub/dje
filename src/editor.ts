@@ -2,6 +2,7 @@ import EditorDocument from "./editorDocument.js";
 import EditorView, { EditorTheme } from "./editorView.js";
 import type { Token } from "./languages.js";
 import type { DocumentPosition, DocumentSelection } from "./editorDocument.js";
+import Plaintext from "./languages/plaintext.js";
 
 const TEXT_REGEX = /[A-z_0-9]/;
 export { EditorView };
@@ -66,7 +67,7 @@ export default class Editor {
     this.#shouldSelect = false;
     this.#pressedKeys = {};
     this.#plugins = [];
-    this.#currentMode = mode;
+    this.#currentMode = mode ?? new Plaintext();
     this.#view = new EditorView(theme || {});
     this.#tokens = [];
     this.#tabIndentsLine = tabIndentsLine ?? false;

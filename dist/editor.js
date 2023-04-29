@@ -5,6 +5,10 @@ import {
   EditorView
 } from "./chunk-WMTABAV3.js";
 import {
+  Plaintext
+} from "./chunk-AVTSQY7M.js";
+import "./chunk-V33TSK26.js";
+import {
   __async,
   __privateAdd,
   __privateGet,
@@ -54,7 +58,7 @@ var Editor = class {
     __privateSet(this, _shouldSelect, false);
     __privateSet(this, _pressedKeys, {});
     __privateSet(this, _plugins, []);
-    __privateSet(this, _currentMode, mode);
+    __privateSet(this, _currentMode, mode != null ? mode : new Plaintext());
     __privateSet(this, _view, new EditorView(theme || {}));
     __privateSet(this, _tokens, []);
     __privateSet(this, _tabIndentsLine, tabIndentsLine != null ? tabIndentsLine : false);
