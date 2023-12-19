@@ -27,7 +27,7 @@ export default class Javascript implements EditorLanguageMode {
         if (KEYWORDS.includes(content))
           lines[lines.length - 1].push(token.keyword(content));
         else
-          lines[lines.length - 1].push(token.identifier(content));
+          lines[lines.length - 1].push(token.variableName(content));
       }
 
       else if (text[i] === '"' || text[i] === "'") {
@@ -78,7 +78,7 @@ export default class Javascript implements EditorLanguageMode {
               const inner = text.substring(start, i);
               lines[lines.length - 1].push(token.string(content));
               content = "";
-              lines[lines.length - 1].push(token.modifier("$"));
+              lines[lines.length - 1].push(token.operator("$"));
               lines[lines.length - 1].push(token.punctuation("{"));
               const innerLines = this.lex(inner.substring(2, inner.length - 1));
               

@@ -1,7 +1,14 @@
-import Editor from "../../dist/editor.js";
-import Javascript from "../../dist/languages/javascript.js";
-import AutoIndent from "../../dist/plugins/autoIndent.js";
-import CharacterPairs from "../../dist/plugins/characterPairs.js";
+// import Editor from "../../dist/editor.js";
+// import Javascript from "../../dist/languages/javascript.js";
+// import AutoIndent from "../../dist/plugins/autoIndent.js";
+// import CharacterPairs from "../../dist/plugins/characterPairs.js";
+// import PrismLanguage from "../../dist/languages/prismLanguage.js";
+
+import Editor from "../../src/editor";
+import AutoIndent from "../../src/plugins/autoIndent";
+import CharacterPairs from "../../src/plugins/characterPairs";
+import PrismLanguage from "../../src/languages/prismLanguage";
+import * as prismjs from "prismjs";
 
 const editor = new Editor({
   element: ".editor",
@@ -13,7 +20,8 @@ function greet(name) {
 }
 
 greet("World");`,
-  mode: new Javascript(),
+  // @ts-ignore
+  mode: PrismLanguage.from(prismjs, "javascript"),
   plugins: [
     new AutoIndent,
     new CharacterPairs,
@@ -38,6 +46,7 @@ greet("World");`,
       string: "#40b82e",
       number: "#f5cb42",
       comment: "#555555",
+      operator: "#419be0"
     }
   },
   tabSize: 2,

@@ -13,7 +13,16 @@ export enum TokenType {
   "comment",
   "keyword",
   "builtin",
-  "identifier"
+  "variableName",
+  "className",
+  "functionName",
+  "boolean",
+  "regex",
+  "operator",
+  "constant",
+  "property",
+  "punctuation",
+  "tagName"
 }
 
 export interface EditorLanguageMode {

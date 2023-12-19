@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "tsup --dts",
-    "dev": "tsup --watch"
+    "dev": "vite examples/basic/"
   },
   "repository": {
     "type": "git",
@@ -22,13 +22,21 @@
   },
   "homepage": "https://github.com/neverUsedGithub/dje#readme",
   "devDependencies": {
-    "tsup": "^6.7.0"
+    "prismjs": "^1.29.0",
+    "tsup": "^6.7.0",
+    "vite": "^4.4.11"
   },
-  "files": [ "dist" ],
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "exports": {
     ".": "./dist/editor.js",
+    "./languages": "./dist/languages.js",
     "./languages/*": "./dist/languages/*.js",
     "./plugins/*": "./dist/plugins/*.js"
+  },
+  "dependencies": {
+    "@types/prismjs": "^1.26.1"
   }
 }
