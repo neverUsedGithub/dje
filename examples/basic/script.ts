@@ -95,6 +95,7 @@ const editor = new Editor({
 editor.on("press", (ev: KeyboardEvent) => {
   if (ev.key === "Escape" && hasSelected) {
     hasSelected = false;
+    editor.setReadOnly(true);
     editor.setMode(new Javascript());
     editor.document.setText(welcomeText);
     editor.setCursor(0, 0);
