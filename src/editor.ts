@@ -52,6 +52,19 @@ interface EditorOptions {
   readOnly?: boolean;
 }
 
+function getSelectionSide(
+  selection: DocumentSelection,
+  side: "left" | "right"
+) {
+  if (
+    selection.start.line < selection!.end!.line ||
+    selection.start.col <= selection!.end!.col
+  )
+    return side === "left" ? selection.start : selection.end!;
+
+  return side === "left" ? selection.end! : selection.start;
+}
+
 export default class Editor {
   #canvasEl: HTMLCanvasElement;
   #context: CanvasRenderingContext2D | null;
@@ -263,7 +276,8 @@ export default class Editor {
           };
           this.#shouldSelect = false;
         }
-        if (this.#selection && this.#selection.end) this.#selection = null;
+        if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight")
+          if (this.#selection && this.#selection.end) this.#selection = null;
       }
 
       if (ev.key === "Shift") {
@@ -277,6 +291,14 @@ export default class Editor {
           this.moveCursor(-1, 0);
         }
       } else if (ev.key === "ArrowRight") {
+        if (this.#selection && this.#selection.end) {
+          const pos = getSelectionSide(this.#selection, "right");
+          this.#cursor.col = pos.col;
+          this.#cursor.line = pos.line;
+          this.#selection = null;
+          return;
+        }
+
         const currline = this.document.getLine(this.#cursor.line);
         if (
           this.#cursor.line + 1 < this.document.getLines().length &&
@@ -300,6 +322,14 @@ export default class Editor {
           }
         }
       } else if (ev.key === "ArrowLeft") {
+        if (this.#selection && this.#selection.end) {
+          const pos = getSelectionSide(this.#selection, "left");
+          this.#cursor.col = pos.col;
+          this.#cursor.line = pos.line;
+          this.#selection = null;
+          return;
+        }
+
         if (this.#cursor.col - 1 < 0 && this.#cursor.line - 1 >= 0) {
           this.moveCursor(-1, 0);
           this.#cursor.col = this.document.getLine(this.#cursor.line).length;
