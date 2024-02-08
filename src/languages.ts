@@ -1,75 +1,75 @@
 import { TokenType } from "./editor";
 
 export class Token {
-  type: string;
+  type: TokenType;
   value: string;
 
-  constructor(type: string, value: string) {
+  constructor(type: TokenType, value: string) {
     this.type = type;
     this.value = value;
   }
 }
 
 export function string(value: string): Token {
-  return { type: "string", value };
+  return { type: TokenType.string, value };
 }
 
 export function number(value: string): Token {
-  return { type: "number", value };
+  return { type: TokenType.number, value };
 }
 
 export function comment(value: string): Token {
-  return { type: "comment", value };
+  return { type: TokenType.comment, value };
 }
 
 export function keyword(value: string): Token {
-  return { type: "keyword", value };
+  return { type: TokenType.keyword, value };
 }
 
 export function builtin(value: string): Token {
-  return { type: "builtin", value };
+  return { type: TokenType.builtin, value };
 }
 
 export function variableName(value: string): Token {
-  return { type: "variableName", value };
+  return { type: TokenType.variableName, value };
 }
 
 export function className(value: string): Token {
-  return { type: "className", value };
+  return { type: TokenType.className, value };
 }
 
 export function functionName(value: string): Token {
-  return { type: "functionName", value };
+  return { type: TokenType.functionName, value };
 }
 
 export function boolean(value: string): Token {
-  return { type: "boolean", value };
+  return { type: TokenType.boolean, value };
 }
 
 export function regex(value: string): Token {
-  return { type: "regex", value };
+  return { type: TokenType.regex, value };
 }
 
 export function operator(value: string): Token {
-  return { type: "operator", value };
+  return { type: TokenType.operator, value };
 }
 
 export function constant(value: string): Token {
-  return { type: "constant", value };
+  return { type: TokenType.constant, value };
 }
 
 export function property(value: string): Token {
-  return { type: "property", value };
+  return { type: TokenType.property, value };
 }
 
 export function punctuation(value: string): Token {
-  return { type: "punctuation", value };
+  return { type: TokenType.punctuation, value };
 }
 
 export function tagName(value: string): Token {
-  return { type: "tagName", value };
+  return { type: TokenType.tagName, value };
 }
 
 export function plain(value: string): Token {
-  return { type: "text", value };
+  return { type: TokenType.text, value };
 }
