@@ -367,15 +367,22 @@ export default class Editor {
         }
       }
       else if (ev.key === "Enter") {
-        const currline = this.document.getLine(this.#cursor.line);
-        const rest = currline.substring(this.#cursor.col);
-        this.document.setLine(this.#cursor.line, currline.substring(0, this.#cursor.col));
-      
-        this.document.addLine(this.#cursor.line + 1, rest);
-        this.moveCursor(1, 0);
-        this.#cursor.col = 0;
+        if (this.#selection && this.#selection.end) {
+          this.document.replaceRange(this.#selection, "\n");
+          this.#selection = null;
+          this.moveCursor(1, 0);
+        }
+        else {
+          const currline = this.document.getLine(this.#cursor.line);
+          const rest = currline.substring(this.#cursor.col);
+          this.document.setLine(this.#cursor.line, currline.substring(0, this.#cursor.col));
         
-        this.#triggerEvent("key", "\n");
+          this.document.addLine(this.#cursor.line + 1, rest);
+          this.moveCursor(1, 0);
+          this.#cursor.col = 0;
+          
+          this.#triggerEvent("key", "\n");
+        }
       }
       else if (ev.key.length === 1) {
         if (this.#selection) {
