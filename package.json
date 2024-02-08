@@ -8,7 +8,8 @@
   },
   "scripts": {
     "build": "tsup --dts",
-    "dev": "vite examples/basic/"
+    "dev": "vite examples/basic/",
+    "build:static": "vite build --base /dje/ examples/basic/"
   },
   "repository": {
     "type": "git",
