@@ -15,8 +15,8 @@ import Javascript from "../../src/languages/javascript";
 const examples = {
   js: {
     text: `/** 
-* @description A greeting function.
-*/
+ * @description A greeting function.
+ */
 function greet(name) {
   console.log(\`Hello, \${name}!\`);
 }
@@ -47,8 +47,7 @@ greet("World");`,
 
 const welcomeText = `// Welcome to Dramatic Javascript Editor!
 
-// This is a basic example demonstrating
-// basic text editing features.
+// This example demonstrates basic text editing features.
 
 // Pick an example by pressing [Enter]
 // After selecting an example you can return by pressing [Esc]
