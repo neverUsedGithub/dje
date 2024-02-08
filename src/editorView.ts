@@ -123,7 +123,11 @@ export default class EditorView implements EditorPlugin {
   }
 
   #adjustFont() {
-    const metrics = this.#context!.measureText("A");
+    if (!this.#context) {
+      throw new Error("Missing canvas context");
+    }
+
+    const metrics = this.#context.measureText("A");
     this.#characterWidth = metrics.width;
     this.#characterHeight = metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
   }
@@ -135,6 +139,10 @@ export default class EditorView implements EditorPlugin {
     charHeight: number,
     selection: DocumentSelection
   ): void {
+    if (!this.#context) {
+      throw new Error("Missing canvas context");
+    }
+
     if (!selection.end) {
       console.warn("Tried to draw a selection without an ending.");
       return;
@@ -154,11 +162,11 @@ export default class EditorView implements EditorPlugin {
       );
 
     // Selection start < selection end
-    this.#context!.fillStyle = this.theme.selection as string;
+    this.#context.fillStyle = this.theme.selection as string;
     for (let line = selection.start.line; line <= selection.end.line; line++) {
       
       if (line === selection.start.line && selection.start.line === selection.end.line) {
-        this.#context!.fillRect(
+        this.#context.fillRect(
           transform.x + selection.start.col * charWidth,
           transform.y + line * lineHeight - lineHeight,
           (selection.end.col - selection.start.col) * charWidth,
@@ -166,7 +174,7 @@ export default class EditorView implements EditorPlugin {
         )
       }
       else if (line === selection.start.line) {
-        this.#context!.fillRect(
+        this.#context.fillRect(
           transform.x + selection.start.col * charWidth,
           transform.y + line * lineHeight - lineHeight,
           Math.max(
@@ -177,7 +185,7 @@ export default class EditorView implements EditorPlugin {
         )
       }
       else if (line === selection.end.line) {
-        this.#context!.fillRect(
+        this.#context.fillRect(
           transform.x + 0,
           transform.y + line * lineHeight - lineHeight,
           selection.end.col * charWidth,
@@ -185,7 +193,7 @@ export default class EditorView implements EditorPlugin {
         )
       }
       else {
-        this.#context!.fillRect(
+        this.#context.fillRect(
           transform.x + 0,
           transform.y + line * lineHeight - lineHeight,
           Math.max(this.#editor!.document.getLine(line).length * charWidth, charWidth),
@@ -196,6 +204,10 @@ export default class EditorView implements EditorPlugin {
   }
 
   #draw(time: number): void {
+    if (!this.#context) {
+      throw new Error("Missing canvas context");
+    }
+    
     if (this.#lastTime === null) {
       this.#lastTime = time;
       requestAnimationFrame(this.#draw.bind(this));
@@ -204,7 +216,7 @@ export default class EditorView implements EditorPlugin {
 
     const delta = Math.min(time - this.#lastTime, 100) / 1000;
     this.#lastTime = time;
-    this.#context!.fillStyle = this.theme.background as string;
+    this.#context.fillStyle = this.theme.background as string;
 
     const maxLineLength = Math.max(
       ...this.#editor!.document.getLines().map(l => l.length)
@@ -222,7 +234,7 @@ export default class EditorView implements EditorPlugin {
     // @ts-ignore
     this.#context.font = `${fontSize}px ${this.#fontFamily}`;
 
-    this.#context!.fillRect(
+    this.#context.fillRect(
       0, 0, this.#canvasEl!.width, this.#canvasEl!.height
     );
 
@@ -273,15 +285,15 @@ export default class EditorView implements EditorPlugin {
       let col = 0;
       for (const token of tokens[lineNo]) {
         const color = getColorFor(this.theme, token.type);
-        this.#context!.font = colorToFont(color, fontSize, this.#fontFamily);
-        this.#context!.fillStyle = getContextColor(
+        this.#context.font = colorToFont(color, fontSize, this.#fontFamily);
+        this.#context.fillStyle = getContextColor(
           color,
           transform.x + col * charWidth, transform.x + col * charWidth + token.value.length * charWidth,
-          this.#context!
+          this.#context
         );
 
-        this.#context!.textBaseline = "top";
-        this.#context!.fillText(
+        this.#context.textBaseline = "top";
+        this.#context.fillText(
           token.value,
           transform.x + col * charWidth,
           transform.y + lineNo * lineHeight - lineHeight + charHeight / 5
@@ -291,18 +303,18 @@ export default class EditorView implements EditorPlugin {
     }
 
     this.#cursorTimer += delta;
-    this.#context!.fillStyle = (this.theme.cursorColor || this.theme.foreground) as string;
+    this.#context.fillStyle = (this.theme.cursorColor || this.theme.foreground) as string;
     // @ts-ignore
     if (this.#cursorTimer > this.cursorBlinkTime) {
-      this.#context!.fillStyle = "transparent";
+      this.#context.fillStyle = "transparent";
       // @ts-ignore
       if (this.#cursorTimer > this.cursorBlinkTime * 2) {
         this.#cursorTimer = 0;
-        this.#context!.fillStyle = (this.theme.cursorColor || this.theme.foreground) as string;
+        this.#context.fillStyle = (this.theme.cursorColor || this.theme.foreground) as string;
       }
     }
     
-    this.#context!.fillRect(
+    this.#context.fillRect(
       transform.x + this.#editor!.getCursor().col * charWidth,
       transform.y + this.#editor!.getCursor().line * lineHeight - lineHeight,
       charWidth / 8, charHeight
