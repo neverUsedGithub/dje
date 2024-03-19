@@ -357,6 +357,16 @@ export default class Editor {
         this.#cursor.col = this.document.getLine(this.#cursor.line).length;
       } else if (ev.key === "Control") {
         this.#pressedKeys[ev.key] = true;
+      } else if (ev.key === "a" && this.#pressedKeys["Control"]) {
+        const lineCount = this.document.getLineCount();
+        this.#selection = {
+          start: { line: 0, col: 0 },
+          end: {
+            line: lineCount - 1,
+            col: this.document.getLine(lineCount - 1).length,
+          },
+        };
+        return;
       }
 
       if (this.#readOnly) return;

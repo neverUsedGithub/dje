@@ -1,7 +1,10 @@
-export interface DocumentPosition { line: number, col: number }
+export interface DocumentPosition {
+  line: number;
+  col: number;
+}
 export interface DocumentSelection {
-  start: DocumentPosition,
-  end: DocumentPosition | null
+  start: DocumentPosition;
+  end: DocumentPosition | null;
 }
 
 export default class EditorDocument {
@@ -15,7 +18,7 @@ export default class EditorDocument {
 
   deleteAt({ line, col }: DocumentPosition) {
     const ln = this.#lines[line];
-    
+
     this.#lines[line] = ln.substring(0, col - 1) + ln.substring(col);
     this.#genTokens();
   }
@@ -25,9 +28,12 @@ export default class EditorDocument {
       const lines = text.split("\n");
       const restText = this.#lines[line].substring(col);
       this.setLine(line, this.#lines[line].substring(0, col) + lines[0]);
-      
+
       for (let offset = 1; offset < lines.length; offset++) {
-        this.addLine(line + offset, lines[offset] + (offset === lines.length - 1 ? restText : ""));
+        this.addLine(
+          line + offset,
+          lines[offset] + (offset === lines.length - 1 ? restText : "")
+        );
       }
       return;
     }
@@ -50,34 +56,37 @@ export default class EditorDocument {
 
   positionToIndex({ line, col }: DocumentPosition) {
     let index = col;
-    
+
     for (let i = 0; i < line; i++) {
       index += this.#lines[i].length + 1;
     }
-    
+
     return index;
   }
 
   replaceRange({ start, end }: DocumentSelection, replacement: string): void {
     if (!end)
-      throw new Error("Unexpected value for replaceRange({ start, end }, replacement), end cannot be undefined.");
+      throw new Error(
+        "Unexpected value for replaceRange({ start, end }, replacement), end cannot be undefined."
+      );
 
-    if (start.line > end.line ||
-      (
-       start.line === end.line &&
-       start.col > end.col
-      ))
-      return this.replaceRange({
-        start: end, end: start
-      }, replacement);
+    if (
+      start.line > end.line ||
+      (start.line === end.line && start.col > end.col)
+    )
+      return this.replaceRange(
+        {
+          start: end,
+          end: start,
+        },
+        replacement
+      );
 
     let text = this.#lines.join("\n");
     const startR = this.positionToIndex(start);
     const endR = this.positionToIndex(end);
 
-    text = text.substring(0, startR) +
-           replacement +
-           text.substring(endR);
+    text = text.substring(0, startR) + replacement + text.substring(endR);
 
     this.#lines = text.split("\n");
     this.#genTokens();
@@ -85,13 +94,14 @@ export default class EditorDocument {
 
   getRange({ start, end }: DocumentSelection): string {
     if (!end)
-      throw new Error("Unexpected value for getRange({ start, end }), end cannot be undefined.");
+      throw new Error(
+        "Unexpected value for getRange({ start, end }), end cannot be undefined."
+      );
 
-    if (start.line > end.line ||
-      (
-       start.line === end.line &&
-       start.col > end.col
-      ))
+    if (
+      start.line > end.line ||
+      (start.line === end.line && start.col > end.col)
+    )
       return this.getRange({ start: end, end: start });
 
     const text = this.#lines.join("\n");
@@ -121,5 +131,9 @@ export default class EditorDocument {
 
   getLine(line: number) {
     return this.#lines[line];
+  }
+
+  getLineCount(): number {
+    return this.#lines.length;
   }
 }

@@ -6,7 +6,7 @@ const ID_START = /[\$A-Za-z_]/;
 const ID_REST = /[\$A-Za-z_0-9]/;
 const NUMBERS = /[0-9]/;
 
-const KEYWORDS = ["await", "async", "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "enum", "export", "extends", "false", "finally", "for", "function", "if", "implements", "import", "in", "instanceof", "interface", "let", "new", "null", "package", "private", "protected", "public", "return", "super", "switch", "static", "this", "throw", "try", "true", "typeof", "var", "void", "while", "with", "yield"];
+const KEYWORDS = ["await", "async", "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "export", "extends", "false", "finally", "for", "function", "if", "implements", "import", "in", "instanceof", "interface", "let", "new", "null", "return", "super", "switch", "static", "this", "throw", "try", "true", "typeof", "var", "void", "while", "with", "yield"];
 
 export default class Javascript implements EditorLanguageMode {
   lex(text: string) {
@@ -78,7 +78,7 @@ export default class Javascript implements EditorLanguageMode {
               const inner = text.substring(start, i);
               lines[lines.length - 1].push(token.string(content));
               content = "";
-              lines[lines.length - 1].push(token.operator("$"));
+              lines[lines.length - 1].push(token.punctuation("$"));
               lines[lines.length - 1].push(token.punctuation("{"));
               const innerLines = this.lex(inner.substring(2, inner.length - 1));
               

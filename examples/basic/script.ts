@@ -22,7 +22,7 @@ function greet(name) {
 }
 
 greet("World");`,
-    mode: PrismLanguage.from(prismjs, "javascript"),
+    mode: new Javascript(),
   },
   html: {
     text: `<!DOCTYPE html>

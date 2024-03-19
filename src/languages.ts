@@ -1,13 +1,8 @@
 import { TokenType } from "./editor";
 
-export class Token {
+export interface Token {
   type: TokenType;
   value: string;
-
-  constructor(type: TokenType, value: string) {
-    this.type = type;
-    this.value = value;
-  }
 }
 
 export function string(value: string): Token {
