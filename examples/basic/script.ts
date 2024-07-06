@@ -9,6 +9,7 @@ import AutoIndent from "../../src/plugins/autoIndent";
 import CharacterPairs from "../../src/plugins/characterPairs";
 import PrismLanguage from "../../src/languages/prismLanguage";
 import * as prismjs from "prismjs";
+import "prismjs/components/prism-ruby";
 import Plaintext from "../../src/languages/plaintext";
 import Javascript from "../../src/languages/javascript";
 
@@ -43,6 +44,14 @@ greet("World");`,
 </html>`,
     mode: PrismLanguage.from(prismjs, "html"),
   },
+  ruby: {
+    text: `def greet(name)
+  puts "Hello, #{name}!"
+end
+
+greet("World")`,
+    mode: PrismLanguage.from(prismjs, "ruby")
+  }
 } as const;
 
 const welcomeText = `// Welcome to Dramatic Javascript Editor!
