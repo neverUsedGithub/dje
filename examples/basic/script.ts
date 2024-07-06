@@ -50,7 +50,7 @@ const welcomeText = `// Welcome to Dramatic Javascript Editor!
 // This example demonstrates basic text editing features.
 
 // Pick an example by pressing [Enter]
-// After selecting an example you can return by pressing [Esc]
+// After selecting an example you can return by pressing [Ctrl+Q]
 ${Object.keys(examples).join("\n")}`;
 
 let hasSelected = false;
@@ -92,7 +92,7 @@ const editor = new Editor({
 });
 
 editor.on("press", (ev: KeyboardEvent) => {
-  if (ev.key === "Escape" && hasSelected) {
+  if (ev.ctrlKey && ev.key === "q" && hasSelected) {
     hasSelected = false;
     editor.setReadOnly(true);
     editor.setMode(new Javascript());
